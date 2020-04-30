@@ -22,17 +22,17 @@ class Feed extends Component {
   };
 
   componentDidMount() {
-    fetch('URL')
-      .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Failed to fetch user status.');
-        }
-        return res.json();
-      })
-      .then(resData => {
-        this.setState({ status: resData.status });
-      })
-      .catch(this.catchError);
+    // fetch('http://localhost:3030/v1/posts')
+    //   .then(res => {
+    //     if (res.status !== 200) {
+    //       throw new Error('Failed to fetch user status.');
+    //     }
+    //     return res.json();
+    //   })
+    //   .then(resData => {
+    //     this.setState({ status: resData.status });
+    //   })
+    //   .catch(this.catchError);
 
     this.loadPosts();
   }
@@ -50,21 +50,28 @@ class Feed extends Component {
       page--;
       this.setState({ postPage: page });
     }
-    fetch('URL')
-      .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Failed to fetch posts.');
-        }
-        return res.json();
-      })
-      .then(resData => {
-        this.setState({
-          posts: resData.posts,
-          totalPosts: resData.totalItems,
-          postsLoading: false
-        });
-      })
-      .catch(this.catchError);
+    fetch('http://localhost:3030/v1/posts', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      mode: 'cors',
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        throw new Error('Failed to fetch posts.');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      this.setState({
+        posts: resData.posts,
+        totalPosts: resData.totalItems,
+        postsLoading: false
+      });
+    })
+    .catch(this.catchError);
   };
 
   statusUpdateHandler = event => {
@@ -105,54 +112,75 @@ class Feed extends Component {
     this.setState({
       editLoading: true
     });
+
     // Set up data (with image!)
-    let url = 'URL';
+    let url = 'http://localhost:3030/v1/posts/create';
     if (this.state.editPost) {
-      url = 'URL';
+      const postId = this.state.editPost._id;
+      url = `http://localhost:3030/v1/posts/${postId}/update`;
     }
 
-    fetch(url)
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Creating or editing a post failed!');
+    // Temporary user :
+    postData.creator = {
+      name: "Mikhael",
+      id: "10100010010101000101"
+    }
+
+    fetch(url, {
+      method: (this.state.editPost) ? 'PUT' : 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      mode: 'cors',
+      body: JSON.stringify({
+          title: postData.title,
+          content: postData.content,
+          image: `http://localhost:3030/test.png`,
+          creator: postData.creator,
+      })
+    })
+    .then(res => {
+      if (res.status !== 200 && res.status !== 201) {
+        throw new Error('Creating or editing a post failed!');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      const post = {
+        _id: resData.post._id,
+        title: resData.post.title,
+        content: resData.post.content,
+        creator: resData.post.creator,
+        createdAt: resData.post.createdAt
+      };
+      this.setState(prevState => {
+        let updatedPosts = [...prevState.posts];
+        if (prevState.editPost) {
+          const postIndex = prevState.posts.findIndex(
+            p => p._id === prevState.editPost._id
+          );
+          updatedPosts[postIndex] = post;
+        } else if (prevState.posts.length < 2) {
+          updatedPosts = prevState.posts.concat(post);
         }
-        return res.json();
-      })
-      .then(resData => {
-        const post = {
-          _id: resData.post._id,
-          title: resData.post.title,
-          content: resData.post.content,
-          creator: resData.post.creator,
-          createdAt: resData.post.createdAt
-        };
-        this.setState(prevState => {
-          let updatedPosts = [...prevState.posts];
-          if (prevState.editPost) {
-            const postIndex = prevState.posts.findIndex(
-              p => p._id === prevState.editPost._id
-            );
-            updatedPosts[postIndex] = post;
-          } else if (prevState.posts.length < 2) {
-            updatedPosts = prevState.posts.concat(post);
-          }
-          return {
-            posts: updatedPosts,
-            isEditing: false,
-            editPost: null,
-            editLoading: false
-          };
-        });
-      })
-      .catch(err => {
-        console.log(err);
-        this.setState({
+        return {
+          posts: updatedPosts,
           isEditing: false,
           editPost: null,
-          editLoading: false,
-          error: err
-        });
+          editLoading: false
+        };
       });
+    })
+    .catch(err => {
+      console.log(err);
+      this.setState({
+        isEditing: false,
+        editPost: null,
+        editLoading: false,
+        error: err
+      });
+    });
   };
 
   statusInputChangeHandler = (input, value) => {
@@ -161,24 +189,31 @@ class Feed extends Component {
 
   deletePostHandler = postId => {
     this.setState({ postsLoading: true });
-    fetch('URL')
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Deleting a post failed!');
-        }
-        return res.json();
-      })
-      .then(resData => {
-        console.log(resData);
-        this.setState(prevState => {
-          const updatedPosts = prevState.posts.filter(p => p._id !== postId);
-          return { posts: updatedPosts, postsLoading: false };
-        });
-      })
-      .catch(err => {
-        console.log(err);
-        this.setState({ postsLoading: false });
+    fetch(`http://localhost:3030/v1/posts/${postId}/delete`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      mode: 'cors',
+    })
+    .then(res => {
+      if (res.status !== 200 && res.status !== 201) {
+        throw new Error('Deleting a post failed!');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      console.log(resData);
+      this.setState(prevState => {
+        const updatedPosts = prevState.posts.filter(p => p._id !== postId);
+        return { posts: updatedPosts, postsLoading: false };
       });
+    })
+    .catch(err => {
+      console.log(err);
+      this.setState({ postsLoading: false });
+    });
   };
 
   errorHandler = () => {
