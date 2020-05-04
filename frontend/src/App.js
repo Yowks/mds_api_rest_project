@@ -59,7 +59,7 @@ class App extends Component {
   loginHandler = (event, authData) => {
     event.preventDefault();
     this.setState({ authLoading: true });
-    fetch('http://localhost:3030/v1/users/login', {
+    fetch('http://localhost:3030/users/login', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -112,7 +112,7 @@ class App extends Component {
     
     event.preventDefault();
     this.setState({ authLoading: true });
-    fetch('http://localhost:3030/v1/users/create', {
+    fetch('http://localhost:3030/users/create', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

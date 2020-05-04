@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv').config()
 const path = require('path');
 const fileUpload = require('express-fileupload');
 
@@ -22,7 +21,7 @@ class Server {
      * @return {Object} connect
      */
     dbConnect() {
-        const host = `mongodb+srv://${process.env.NOSQL_USER}:${process.env.NOSQL_PWD}@${process.env.NOSQL_HOST}/${process.env.NOSQL_TABLE}`
+        const host = `mongodb+srv://test:<password>@cluster0-3cfzy.gcp.mongodb.net/test?retryWrites=true&w=majority`
         const connect = mongoose.createConnection(host, { useNewUrlParser: true, useUnifiedTopology: true })
 
         connect.on('error', (err) => {

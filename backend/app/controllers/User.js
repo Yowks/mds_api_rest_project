@@ -22,11 +22,11 @@ class User {
 
     /**
      * Récupérer tous les utilisateurs
-     * @Endpoint : /v1/users
+     * @Endpoint : /users
      * @Method : GET
      */
     get_users() {
-        this.app.get('/v1/users', (req, res) => {
+        this.app.get('/users', (req, res) => {
             try {
                 this.UserModel.find({}, function(err, users) {
                     res.status(200).json(
@@ -45,11 +45,11 @@ class User {
     
     /**
      * Récupérer les données d'un utilisateur
-     * @Endpoint : /v1/users/{id}
+     * @Endpoint : /users/{id}
      * @Method : GET
      */
     get_user() {
-        this.app.get('/v1/users/:id', (req, res) => {
+        this.app.get('/users/:id', (req, res) => {
             try {
                 this.UserModel.findById(req.params.id).then(user => {
                     if(user){
@@ -89,11 +89,11 @@ class User {
     
     /**
      * Créer un utilisateur
-     * @Endpoint : /v1/users/create
+     * @Endpoint : /users/create
      * @Method : POST
      */
     create_user() {
-        this.app.post('/v1/users/create', (req, res) => {
+        this.app.post('/users/create', (req, res) => {
             try {
                 if((req.body.email && req.body.email !== '') && (req.body.name && req.body.name !== '') && (req.body.password && req.body.password !== '')){
                     const userModel = new this.UserModel(req.body)
@@ -148,11 +148,11 @@ class User {
     
     /**
      * Editer un utilisateur
-     * @Endpoint : /v1/users/{id}/update
+     * @Endpoint : /users/{id}/update
      * @Method : PUT
      */
     update_user() {
-        this.app.put('/v1/users/:id/update', (req, res) => {
+        this.app.put('/users/:id/update', (req, res) => {
             try {
                 this.UserModel.findByIdAndUpdate(req.params.id, req.body).then(user => {
                     if(user){
@@ -190,11 +190,11 @@ class User {
 
     /**
      * Supprimer un utilisateur
-     * @Endpoint : /v1/users/{id}/delete
+     * @Endpoint : /users/{id}/delete
      * @Method : DELETE
      */
     delete_user() {
-        this.app.delete('/v1/users/:id/delete', (req, res) => {
+        this.app.delete('/users/:id/delete', (req, res) => {
             try {
                 this.UserModel.findByIdAndDelete(req.params.id).then(user => {
                     res.status(200).json(
@@ -224,16 +224,16 @@ class User {
 
     /**
      * Connecter un user
-     * @Endpoint : /v1/users/login
+     * @Endpoint : /users/login
      * @Method : POST
      */
     login() {
-        this.app.post('/v1/users/login', (req, res) => {
+        this.app.post('/users/login', (req, res) => {
             try {
                 this.UserModel.findOne({"email": req.body.email, "password": req.body.password})
                 .then(user => {
                     if(user) { 
-                        jwt.sign({email: req.body.email}, 'shhhhh', {expiresIn: '6h'}, (err, token) => {
+                        jwt.sign({email: req.body.email}, 'nope', {expiresIn: '6h'}, (err, token) => {
                             if(err) {
                                 res.status(400).json({ error: { status: 400, message: "Error",} })
                             } else {

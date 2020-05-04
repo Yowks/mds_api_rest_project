@@ -22,7 +22,7 @@ class Feed extends Component {
   };
 
   componentDidMount() {
-    // fetch('http://localhost:3030/v1/posts')
+    // fetch('http://localhost:3030/posts')
     //   .then(res => {
     //     if (res.status !== 200) {
     //       throw new Error('Failed to fetch user status.');
@@ -50,7 +50,7 @@ class Feed extends Component {
       page--;
       this.setState({ postPage: page });
     }
-    fetch('http://localhost:3030/v1/posts', {
+    fetch('http://localhost:3030/posts', {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -114,10 +114,10 @@ class Feed extends Component {
     });
 
     // Set up data (with image!)
-    let url = 'http://localhost:3030/v1/posts/create';
+    let url = 'http://localhost:3030/posts/create';
     if (this.state.editPost) {
       const postId = this.state.editPost._id;
-      url = `http://localhost:3030/v1/posts/${postId}/update`;
+      url = `http://localhost:3030/posts/${postId}/update`;
     }
 
     // Temporary user :
@@ -189,7 +189,7 @@ class Feed extends Component {
 
   deletePostHandler = postId => {
     this.setState({ postsLoading: true });
-    fetch(`http://localhost:3030/v1/posts/${postId}/delete`, {
+    fetch(`http://localhost:3030/posts/${postId}/delete`, {
       method: 'DELETE',
       headers: {
         'Accept': 'application/json',

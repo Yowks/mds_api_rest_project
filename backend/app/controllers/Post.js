@@ -19,11 +19,11 @@ class Post {
 
     /**
      * Récupérer tous les posts
-     * @Endpoint : /v1/posts
+     * @Endpoint : /posts
      * @Method : GET
      */
     get_posts() {
-        this.app.get('/v1/posts', (req, res) => {
+        this.app.get('/posts', (req, res) => {
             try {
                 this.PostModel.find({}, function(err, posts) {
                     res.status(200).json(
@@ -43,11 +43,11 @@ class Post {
     
     /**
      * Récupérer les données d'un post
-     * @Endpoint : /v1/posts/{id}
+     * @Endpoint : /posts/{id}
      * @Method : GET
      */
     get_post() {
-        this.app.get('/v1/posts/:id', (req, res) => {
+        this.app.get('/posts/:id', (req, res) => {
             try {
                 this.PostModel.findById(req.params.id).then(post => {
                     if(post){
@@ -87,11 +87,11 @@ class Post {
     
     /**
      * Créer un post
-     * @Endpoint : /v1/posts/create
+     * @Endpoint : /posts/create
      * @Method : POST
      */
     create_post() {
-        this.app.post('/v1/posts/create', (req, res) => {
+        this.app.post('/posts/create', (req, res) => {
             try {
                 if((req.body.title && req.body.title !== '') && (req.body.image && req.body.image !== '') && (req.body.content && req.body.content !== '')){
                     const postModel = new this.PostModel(req.body)
@@ -144,11 +144,11 @@ class Post {
     
     /**
      * Editer un post
-     * @Endpoint : /v1/posts/{id}/update
+     * @Endpoint : /posts/{id}/update
      * @Method : PUT
      */
     update_post() {
-        this.app.put('/v1/posts/:id/update', (req, res) => {
+        this.app.put('/posts/:id/update', (req, res) => {
             try {
                 this.PostModel.findByIdAndUpdate(req.params.id, req.body).then(post => {
                     if(post){
@@ -186,11 +186,11 @@ class Post {
 
     /**
      * Supprimer un post
-     * @Endpoint : /v1/posts/{id}/delete
+     * @Endpoint : /posts/{id}/delete
      * @Method : DELETE
      */
     delete_post() {
-        this.app.delete('/v1/posts/:id/delete', (req, res) => {
+        this.app.delete('/posts/:id/delete', (req, res) => {
             try {
                 this.PostModel.findByIdAndDelete(req.params.id).then(post => {
                     res.status(200).json(
